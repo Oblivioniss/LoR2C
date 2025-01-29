@@ -407,7 +407,7 @@ class LoRAFreezeCallback(TrainerCallback):
             for k in svd_data.keys():
                 if an in k:
                     s = svd_data[k]
-                    if self.top_k is not None:
+                    if self.top_k is not None and self.top_k:
                         top_k = min(self.top_k, len(s))
                         top_sum = np.sum(np.sort(s)[-top_k:][::-1])  # Sum of the top k singular values
                         total_sum = np.sum(s)
@@ -418,7 +418,7 @@ class LoRAFreezeCallback(TrainerCallback):
                         avg_svd[an] = avg
                     break
 
-        if self.top_k is not None:
+        if self.top_k is not None and self.top_k:
             print(f"SVD proportions: {proportion_svd}")
         else:
             print(f"Average SVD values: {avg_svd}")
@@ -428,7 +428,7 @@ class LoRAFreezeCallback(TrainerCallback):
             return
 
         # Select the merge strategy based on the mode
-        if self.top_k is not None:
+        if self.top_k is not None and self.top_k:
             # Merge the two adjacent adapters with the smallest proportion
             min_sum = float('inf')
             pair_to_merge = None
@@ -577,7 +577,7 @@ class LoRAFreezeCallback(TrainerCallback):
             for k in svd_data.keys():
                 if an in k and '+' not in k:
                     s = svd_data[k]
-                    if self.top_k is not None:
+                    if self.top_k is not None and self.top_k:
                         top_k = min(self.top_k, len(s))
                         top_sum = np.sum(np.sort(s)[-top_k:][::-1])  # Sum of the top k singular values
                         total_sum = np.sum(s)
@@ -588,12 +588,12 @@ class LoRAFreezeCallback(TrainerCallback):
                         avg_svd[an] = avg
                     break
 
-        if self.top_k is not None:
+        if self.top_k is not None and self.top_k:
             print(f"SVD proportions used for decomposition: {proportion_svd}")
         else:
             print(f"Average SVD values used for decomposition: {avg_svd}")
 
-        if self.top_k is not None:
+        if self.top_k is not None and self.top_k:
             # Find the adapter with the largest feature space (largest proportion)
             largest_adapter = max(proportion_svd, key=proportion_svd.get)
             print(f"Decomposition operation: The largest adapter is {largest_adapter} with a proportion of {proportion_svd[largest_adapter]:.4f}")
@@ -634,6 +634,10 @@ class LoRAFreezeCallback(TrainerCallback):
 
         
 def main():
+    # See all possible arguments in src/transformers/training_args.py
+    # or by passing the --help flag to this script.
+    # We now keep distinct sets of args, for a cleaner separation of concerns.
+
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
         # If we pass only one argument to the script and it's the path to a json file,
@@ -699,26 +703,22 @@ def main():
     # Set seed before initializing model.
     set_seed(training_args.seed)
 
-    try:
-        if os.environ["DATASET_ROOT"] is not None:
-            raw_datasets = datasets.load_from_disk(os.path.join(os.environ["DATASET_ROOT"], 'glue', data_args.task_name))
-    except:
-        if data_args.task_name is not None:
-            # Downloading and loading a dataset from the hub.
-            raw_datasets = load_dataset(
-                "glue",
-                data_args.task_name,
-                cache_dir=model_args.cache_dir,
-                use_auth_token=True if model_args.use_auth_token else None,
-            )
-        elif data_args.dataset_name is not None:
-            # Downloading and loading a dataset from the hub.
-            raw_datasets = load_dataset(
-                data_args.dataset_name,
-                data_args.dataset_config_name,
-                cache_dir=model_args.cache_dir,
-                use_auth_token=True if model_args.use_auth_token else None,
-            )
+    if data_args.task_name is not None:
+        # Downloading and loading a dataset from the hub.
+        raw_datasets = load_dataset(
+            "glue",
+            data_args.task_name,
+            cache_dir=model_args.cache_dir,
+            use_auth_token=True if model_args.use_auth_token else None,
+        )
+    elif data_args.dataset_name is not None:
+        # Downloading and loading a dataset from the hub.
+        raw_datasets = load_dataset(
+            data_args.dataset_name,
+            data_args.dataset_config_name,
+            cache_dir=model_args.cache_dir,
+            use_auth_token=True if model_args.use_auth_token else None,
+        )
 
     # Labels
     if data_args.task_name is not None:
@@ -965,7 +965,7 @@ def main():
     
     # Get the metric function
     if data_args.task_name is not None:
-        metric = evaluate.load(os.path.join(os.environ['METRICS_ROOT'], "glue/glue.py"), data_args.task_name)
+        metric = evaluate.load("glue", data_args.task_name)
     elif is_regression:
         metric = evaluate.load("mse")
     else:
@@ -997,7 +997,7 @@ def main():
         {'params': model.base_model.model.classifier.parameters(), 'lr': training_args.learning_rate / 2}],
         lr=training_args.learning_rate)
         
-    # Ìí¼ÓÓÃÓÚ¼ÇÂ¼ evaluate Êý¾ÝµÄ»Øµ÷
+    # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½Â¼ evaluate ï¿½ï¿½ï¿½ÝµÄ»Øµï¿½
     merge_interval=int(training_args.num_train_epochs/4/(data_args.max_merge_count+0.000000001))+1
     distribution_interval=int(training_args.num_train_epochs/4/(data_args.max_distribution_count+0.000000001))+1
     svd_interval=min(merge_interval, distribution_interval)
