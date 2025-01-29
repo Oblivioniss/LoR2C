@@ -67,10 +67,6 @@ def print_lora_parameters(model):
         )
         return lora_params
 
-logging.basicConfig(filename='/data/zhaojiancheng-slurm/project/MSLoRA/llama_logs/mhvb_log_llama2.txt', level=logging.INFO, 
-                    format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
 class LlamaForCausalLMWithLoR2C(LlamaForCausalLM):
     def __init__(self, config, llama_lora_layers):
         # Call the __init__ method of the parent class to ensure that the basic initialization logic of the model remains unchanged
@@ -229,7 +225,7 @@ class LoRAFreezeCallback(TrainerCallback):
             for k in svd_data.keys():
                 if an in k:
                     s = svd_data[k]
-                    if self.top_k is not None:
+                    if self.top_k is not None and self.top_k:
                         top_k = min(self.top_k, len(s))
                         top_sum = np.sum(np.sort(s)[-top_k:][::-1])  # Sum of the top k singular values
                         total_sum = np.sum(s)
@@ -240,7 +236,7 @@ class LoRAFreezeCallback(TrainerCallback):
                         avg_svd[an] = avg
                     break
     
-        if self.top_k is not None:
+        if self.top_k is not None and self.top_k:
             print(f"SVD proportions: {proportion_svd}")
         else:
             print(f"Average SVD values: {avg_svd}")
@@ -250,7 +246,7 @@ class LoRAFreezeCallback(TrainerCallback):
             return
     
         # Select the merge strategy based on the mode
-        if self.top_k is not None:
+        if self.top_k is not None and self.top_k:
             # Merge the two adjacent adapters with the smallest proportion
             min_sum = float('inf')
             pair_to_merge = None
@@ -432,7 +428,7 @@ class LoRAFreezeCallback(TrainerCallback):
             for k in svd_data.keys():
                 if an in k and '+' not in k:
                     s = svd_data[k]
-                    if self.top_k is not None:
+                    if self.top_k is not None and self.top_k:
                         top_k = min(self.top_k, len(s))
                         top_sum = np.sum(np.sort(s)[-top_k:][::-1])  # Sum of the top k singular values.
                         total_sum = np.sum(s)
@@ -443,12 +439,12 @@ class LoRAFreezeCallback(TrainerCallback):
                         avg_svd[an] = avg
                     break
     
-        if self.top_k is not None:
+        if self.top_k is not None and self.top_k:
             print(f"SVD proportions used for decomposition: {proportion_svd}")
         else:
             print(f"Average SVD values used for decomposition: {avg_svd}")
     
-        if self.top_k is not None:
+        if self.top_k is not None and self.top_k:
             # Find the adapter with the largest feature space (largest proportion).
             largest_adapter = max(proportion_svd, key=proportion_svd.get)
             print(f"Decomposition operation: The largest adapter is {largest_adapter}, with a proportion of {proportion_svd[largest_adapter]:.4f}")
@@ -491,8 +487,8 @@ class LoRAFreezeCallback(TrainerCallback):
 def train(
     # model/data params
     base_model: str = "",  # the only required argument
-    data_path: str = "/data/zhaojiancheng-slurm/project/MSLoRA/data/alpaca-cleaned",
-    output_dir: str = "../lor2c-alpaca",
+    data_path: str = "yahma/alpaca-cleaned",
+    output_dir: str = "./lora-alpaca",
     # training hyperparams
     batch_size: int = 128,
     micro_batch_size: int = 4,
