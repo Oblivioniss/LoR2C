@@ -39,19 +39,12 @@ run(){
   sfs=$7
   max_merge_count=$5
   max_distribution_count=$6
-  wandb_run_name=roberta-mhvbsfs-${mode}-${task_name}-r-${lora_rank}-n-${l_num}-alpha-16-seed-${seed}-bs-${per_device_train_batch_size}-lr-${learning_rate}-epochs-${num_train_epochs}-merge-${max_merge_count}-dist-${max_distribution_count}
+  wandb_run_name=roberta-lor2c-${mode}-${task_name}-r-${lora_rank}-n-${l_num}-alpha-16-seed-${seed}-bs-${per_device_train_batch_size}-lr-${learning_rate}-epochs-${num_train_epochs}-merge-${max_merge_count}-dist-${max_distribution_count}
   
   exp_dir=../roberta_glue_reproduce/${wandb_run_name}
-  mkdir -p $exp_dir
-  export DATASET_ROOT=/data/zhaojiancheng-slurm/project/MSLoRA/data/
-  export METRICS_ROOT=/data/zhaojiancheng-slurm/project/MSLoRA/metrics
-  cp -r ./peft-0.5.0 $exp_dir
-  cp glue_finetune.sh $exp_dir
-  cp ./run_glue_lora.py $exp_dir
-
   
   CUDA_VISIBLE_DEVICES=0 python ./run_glue_lor2c.py \
-  --model_name_or_path ./models/roberta-base  \
+  --model_name_or_path FacebookAI/roberta-base \
   --task_name ${task_name} \
   --do_train --do_eval \
   --max_seq_length ${ml[$1]} \
@@ -83,7 +76,6 @@ run(){
   #--max_predict_samples 3
 }
 task_base=('mnli' 'mrpc' 'qnli' 'qqp' 'rte' 'sst2' 'stsb' 'cola')
-#for task in "${task_base[@]}"; do
-#    run $task "8" "4" "lor2c" "0" "0" "2"
-#done
-run "mrpc" "8" "4" "lor2c" "0" "0" "2"
+for task in "${task_base[@]}"; do
+    run $task "8" "4" "lor2c" "0" "0" "0"
+done
