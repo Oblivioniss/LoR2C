@@ -21,13 +21,13 @@ run(){
   lora_bias=none
   cutoff_len=256
   wandb_project=proejct_name
-  wandb_run_name=llama-hook-${target_name}-${mode}-lora_r-${lora_r}-lor2c_r-${lor2c_r}-n-${l_num}-alpha-16-seed-${seed}-bs-${bs}-lr-${learning_rate}-len-${cutoff_len}-epochs-${num_train_epochs}-merge-${max_merge_count}-dist-${max_distribution_count}
+  wandb_run_name=llama-lor2c-${target_name}-${mode}-lora_r-${lora_r}-lor2c_r-${lor2c_r}-n-${l_num}-alpha-16-seed-${seed}-bs-${bs}-lr-${learning_rate}-len-${cutoff_len}-epochs-${num_train_epochs}-merge-${max_merge_count}-dist-${max_distribution_count}
   echo $wandb_run_name
   exp_dir=../llama-mhvb-hook/${wandb_run_name}
   mkdir -p $exp_dir
   
   CUDA_VISIBLE_DEVICES=$gpu python llama_finetune_lor2c.py \
-    --base_model=/data/zhaojiancheng-slurm/project/MSLoRA/models/Llama-2-7b-hf \
+    --base_model= meta-llama/Llama-2-7b-hf \
     --cutoff_len=$cutoff_len \
     --mode=$mode \
     --seed=$seed \
@@ -52,5 +52,4 @@ run(){
     --sfs_k ${sfs_k}
 }
 
-# run LoRA with rank 64
-run 'lor2c' 64 32 8 8 2
+run 'lor2c' 64 32 8 8
