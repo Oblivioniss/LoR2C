@@ -38,3 +38,14 @@ bash glue_finetune_lor2c.sh
 ## Thanks
 
 Code is largely based on [AGI-Edgerunners/LLM-Adapters](https://github.com/AGI-Edgerunners/LLM-Adapters), [huggingface/peft](https://github.com/huggingface/peft), [huggingface/transformers](https://github.com/huggingface/transformers)
+
+## Cite
+If you find this method or code useful, please cite
+~~~
+@article{melora,
+  title={Low-Rank Residual Connection Adaptation for Parameter-Efficient Fine-Tuning},
+  author={Zhao, Jiancheng and Yu, Xingda and Yang, Zhen},
+  booktitle={2025 International Joint Conference on Neural Networks (IJCNN)}
+  year={2025}
+}
+~~~
