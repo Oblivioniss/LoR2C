@@ -23,7 +23,7 @@ LoR2C (Low-Rank Residual Connection Adaptation) is a residual connection that is
 
 2. Run experiments
 
-fill in the `--model_name_or_path` `--wandb_project` and `--output_dir` in `llama_finetune.sh` and `glue_finetune.sh` with the path to the model and the output directory.
+fill in the `--model_name_or_path` `--wandb_project` and `--output_dir` in `llama_finetune_lor2c.sh` and `glue_finetune_lor2c.sh` with the path to the model and the output directory.
 
 ### Instruction Tuning
 ```bash
@@ -42,7 +42,7 @@ Code is largely based on [AGI-Edgerunners/LLM-Adapters](https://github.com/AGI-E
 ## Cite
 If you find this method or code useful, please cite
 ~~~
-@article{melora,
+@article{lor2c,
   title={Low-Rank Residual Connection Adaptation for Parameter-Efficient Fine-Tuning},
   author={Zhao, Jiancheng and Yu, Xingda and Yang, Zhen},
   booktitle={2025 International Joint Conference on Neural Networks (IJCNN)}
