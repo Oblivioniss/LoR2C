@@ -44,7 +44,7 @@ If you find this method or code useful, please cite
 ~~~
 @article{lor2c,
   title={Low-Rank Residual Connection Adaptation for Parameter-Efficient Fine-Tuning},
-  author={Zhao, Jiancheng and Yu, Xingda and Zhang, Yuxiang and Yang, Zhen},
+  author={Anonymous Authors},
   year={2025}
 }
 ~~~
