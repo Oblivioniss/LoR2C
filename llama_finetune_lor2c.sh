@@ -26,7 +26,7 @@ run(){
   exp_dir=../llama-lor2c/${wandb_run_name}
   mkdir -p $exp_dir
   
-  CUDA_VISIBLE_DEVICES=$gpu python llama2_finetune_lor2c.py \
+  CUDA_VISIBLE_DEVICES=$gpu python llama_finetune_lor2c.py \
     --base_model= meta-llama/Llama-2-7b-hf \
     --cutoff_len=$cutoff_len \
     --mode=$mode \
