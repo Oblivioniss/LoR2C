@@ -28,6 +28,7 @@ fill in the `--model_name_or_path` `--wandb_project` and `--output_dir` in `llam
 ### Instruction Tuning
 ```bash
 bash llama_finetune_lor2c.sh
+bash finetune_llama3.1_8b_lor2c.sh
 ```
 
 ### NLU
